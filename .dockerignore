@@ -1,0 +1,11 @@
+/docs
+/etc
+
+.*
+!.coveragerc
+!exrest/.isort.cfg
+!.pylintrc
+
+docker-compose.*
+README.md
+.venv

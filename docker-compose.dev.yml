@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - postgres_backups:/backups
+    env_file:
+        - .env
+    ports:
+      - "5436:5432"
+  redis:
+    image: redis
+    expose:
+      - "6379"
+    ports:
+      - "6380:6379"
+    restart: always
+
+  rabbitmq:
+    image: rabbitmq:3.7-alpine
+    expose:
+      - "5672"
+    ports:
+      - "5673:5672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+volumes:
+  postgres_data:
+  postgres_backups:
+  rabbitmq_data:

@@ -1,0 +1,12 @@
+{% extends 'admin/base.html' %}
+
+{% block content %}
+    <form action="" method="post">{% csrf_token %}
+        <div>
+            <h1>Вы уверены что хотите удлать все записи?</h1>
+            <input type="hidden" name="confirmation" value="yes"/>
+            <input type="hidden" name="action" value="delete_all"/>
+            <input type="submit" value="Подтвердить"/>
+        </div>
+    </form>
+{% endblock %}

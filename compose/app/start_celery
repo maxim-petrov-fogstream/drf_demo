@@ -1,0 +1,3 @@
+#!/bin/sh
+
+celery worker --app=exrest.celery_config:app -l INFO -c 1

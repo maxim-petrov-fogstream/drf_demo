@@ -1,0 +1,3 @@
+#!/bin/sh
+
+celery --app=exrest.celery_config:app beat -l INFO --pidfile /tmp/celerybeat.pid -s /tmp/celerybeat-schedule

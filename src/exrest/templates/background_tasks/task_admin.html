@@ -1,0 +1,40 @@
+{% extends 'admin/base_site.html' %}
+
+{% block content_title %}
+    <h1>Запук фоновой задачи</h1>
+{% endblock %}
+
+{% block content %}
+    {{ task_choice }}
+    <p><h1>Параметры:</h1></p>
+    {% for form in forms %}
+        <form method="POST" class="task_form" id="task_form_{{ form.bg_task_name.value }}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="submit-row">
+                <input type="submit" value="Запустить задачу" class="default"/>
+            </div>
+        </form>
+    {% endfor %}
+    <script>
+
+    function hiddenForms(name){
+        let forms = document.getElementsByClassName('task_form');
+        for(var i = 0; i != forms.length; ++i){
+            if(forms[i].id === "task_form_" + name){
+                forms[i].style.display = "inline";
+            }else {
+                forms[i].style.display = "none";
+            }
+        }
+    }
+    document.onreadystatechange = function(){
+        let task_name = document.getElementById('id_task_type').value;
+        hiddenForms(task_name)
+    };
+    document.getElementById('id_task_type').onchange = function(e) {
+        let task_name = e.target.value;
+        hiddenForms(task_name)
+    };
+    </script>
+{% endblock %}

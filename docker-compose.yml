@@ -1,0 +1,100 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres:11-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - postgres_backups:/backups
+    env_file:
+      - ./docker-compose.env
+
+  exrest-wsgi:
+    build:
+      context: .
+      dockerfile: compose/app/Dockerfile
+    env_file:
+      - ./docker-compose.env
+    volumes:
+      - app_static:/application/static
+      - app_media:/application/media
+    depends_on:
+      - postgres
+      - redis
+    links:
+      - redis
+    command: start_uwsgi
+
+  exrest-asgi:
+    build:
+      context: .
+      dockerfile: compose/app/Dockerfile
+    env_file:
+      - ./docker-compose.env
+    volumes:
+      - app_static:/application/static
+      - app_media:/application/media
+    depends_on:
+      - postgres
+      - redis
+    links:
+      - redis
+    command: start_daphne
+
+  celery:
+    build:
+      context: .
+      dockerfile: compose/app/Dockerfile
+    env_file:
+      - ./docker-compose.env
+    depends_on:
+      - exrest-wsgi
+      - redis
+    links:
+      - exrest-wsgi
+      - redis
+    command: start_celery
+
+  celery-beat:
+    build:
+      context: .
+      dockerfile: compose/app/Dockerfile
+    env_file:
+      - ./docker-compose.env
+    depends_on:
+      - exrest-wsgi
+      - redis
+    links:
+      - exrest-wsgi
+      - redis
+    command: start_celery_beat
+
+  redis:
+    image: redis:latest
+    expose:
+      - "6379"
+    restart: always
+
+
+  nginx:
+    build:
+      context: .
+      dockerfile: ./compose/nginx/Dockerfile
+    expose:
+      - "80"
+    ports:
+      - "80:80"
+    volumes:
+      - app_static:/application/static
+      - app_media:/application/media
+    depends_on:
+      - exrest-wsgi
+      - exrest-asgi
+
+
+volumes:
+  app_static:
+  app_logs:
+  app_media:
+  postgres_data:
+  postgres_backups:
